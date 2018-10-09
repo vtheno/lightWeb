@@ -1,6 +1,7 @@
 #coding=utf-8
-from Route import *
-from Check import AssertCheck
+from Web.Route import *
+from Web.Check import AssertCheck
+
 class Application(object):
     def __init__(self,name : str):
         self.__name__ = name            # __name__ : str
@@ -11,7 +12,7 @@ class Application(object):
         return f"{self._route!r}"
     def route(self,pattern_str : str):
         AssertCheck(pattern_str , str)
-        print( f"{self.__name__}: define route {pattern_str}" )
+        #print( f"{self.__name__}: define route {pattern_str}" )
         pattern = Pattern(pattern_str)
         def wait(fn):
             self._route.route_table[pattern] = fn

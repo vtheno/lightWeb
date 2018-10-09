@@ -1,7 +1,8 @@
-﻿from httpStatus import HttpStatus
+﻿from Web.Check import AssertCheck
+from Web.httpStatus import HttpStatus
+
 from urllib.parse import quote, unquote
 from html import escape
-from Check import AssertCheck
 
 class Request(object):
 

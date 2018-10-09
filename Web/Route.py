@@ -1,14 +1,8 @@
 #coding=utf-8
-"""
-/Request.py
-/Route.py
-/httpStatus.py
-/Server.py
-/Application.py
-"""
-from Request import Request
+from Web.Request import Request
+from Web.httpStatus import NotFound
+
 from types import FunctionType
-from httpStatus import NotFound
 class Pattern(object):
     def __init__(self,url):
         self.url = url.split("/")
