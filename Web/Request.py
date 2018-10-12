@@ -7,58 +7,78 @@ from html import escape
 class Request(object):
 
     def __init__(self, ctx):
+        #print( ctx )
         AssertCheck(ctx, str)
-        self.ctx = ctx
-        self.first = []
+        self.ctx = ctx # client_recv_buff
+        self.always = []
+        self.general = []
         self.header = []
         self.resp = []
         self._ctx_msg, self._ctx_forms = self.ctx.split('\r\n\r\n')
         self._ctx_method_route_version, *self._ctx_infos = [i for i in self._ctx_msg.split('\r\n') if i]
-        self._ctx_forms = [i for i in self._ctx_forms.split('\r\n') if i]
 
     def __repr__(self):
         return repr(self.ctx)
 
     def get_info(self):
-        table = dict([tuple(o.split(': ')) for o in self._ctx_infos])
-        return table
+        table = [tuple(o.split(': ')) for o in self._ctx_infos]
+        table = [(k.lower(),v) for k,v in table]
+        return dict(table)
+
+    def get_session_key(self):
+        cookie = self.get_info().get("cookie")
+        if cookie:
+            key,value = tuple(cookie.split("="))
+            if key == "session" and value:
+                return value
+        return None
 
     def get_form(self):
-        table = dict([tuple(unquote(r).split('&')) for r in self._ctx_forms])
-        return table
+        table = [tuple(i.split("=")) for i in self._ctx_forms.split("&") if i]
+        return dict(table)
 
     def get_url(self):
         method, route, http_version = self._ctx_method_route_version.split()
-        route = escape(unquote(route, encoding='utf-8'), quote=1)
+        #route = escape(unquote(route, encoding='utf-8'), quote=1)
+        route = unquote(route,encoding='utf-8')
+        print( f"route => {route}" )
         return route
 
     def get_method(self):
-        method, route, http_version = self.method_route_version.split()
-        return method
+        method, route, http_version = self._ctx_method_route_version.split()
+        return method.upper()
 
-    def add_first(self, first):
-        AssertCheck(first, str)
-        self.first += [first + '\r\n']
+    def add_always(self, always : str):
+        AssertCheck(always, str)
+        self.always += [always + '\r\n']
 
-    def add_header(self, header):
+    def add_general(self, general : str):
+        AssertCheck(general, str)
+        self.general += [general + '\r\n']
+
+    def add_header(self, header : str):
         AssertCheck(header, str)
         self.header += [header + '\r\n']
 
-    def add_resp(self, resp):
+    def add_resp(self, resp : str):
         AssertCheck(resp, str)
         self.resp += [resp + '\r\n']
 
-    def make_response(self, status, content):
+    def make_response(self, status : HttpStatus, content : str):
         AssertCheck(status, HttpStatus)
         if isinstance(content, bytes) or isinstance(content, str):
             AssertCheck(content, type(content))
-        self.add_first(f'''HTTP/1.1 {status!s}''')
+        self.add_always(f'''HTTP/1.1 {status!s}''')
+        self.add_always("Server: ligthWeb")
         self.add_resp('')
         if isinstance(content, str):
             self.add_resp(content)
         response = ''
-        for first in self.first:
-            response += first
+        for always in self.always:
+            response += always
+
+        for general in self.general:
+            response += general
 
         for header in self.header:
             response += header
@@ -66,7 +86,7 @@ class Request(object):
         for resp in self.resp:
             response += resp
 
-        response = response.encode()
+        response = response.encode('utf-8')
         if isinstance(content, str):
             return bytes(response)
         else:

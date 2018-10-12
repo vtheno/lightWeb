@@ -6,6 +6,7 @@ from types import FunctionType
 class Pattern(object):
     def __init__(self,url):
         self.url = url.split("/")
+        #self.url_str = url
     def get_pattern(self,s):
         out = [ ]
         inline = [ ]
@@ -35,7 +36,9 @@ class Pattern(object):
             return out
         return False
     def match(self,url):
+        #print( "match =>",self.url_str,url)
         url = url.split("/")
+        #print( "match =>",self.url,url)
         args = [ ]
         if len(url) != len(self.url):
             return False
@@ -44,7 +47,7 @@ class Pattern(object):
                 continue
             else:
                 out = self.get_pattern(p)(v)
-                if out != False:
+                if out != False and out:
                     args += [out]
                     continue
                 else:
@@ -59,10 +62,13 @@ class Route(object):
         return repr(self.route_table)
     def route(self, ctx : Request, *args,**kws):
         # route : Request -> Response
+        #from pprint import pprint
+        #pprint( self.route_table )
         url = ctx.get_url ()
         #print( "Route:", url )
         for pattern,func in self.route_table.items():
             out = pattern.match(url)
+            #print( "out =>",out )
             if out != False:
                 return func(self, ctx, *(out + list(args)), **kws)
         else:

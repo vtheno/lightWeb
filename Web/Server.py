@@ -5,7 +5,6 @@ import socket
 from urllib.parse import quote,unquote
 import os,threading,time,subprocess,sys
 from pprint import pprint
-from imp import reload
 class HTTPServer(object):
     def __init__(self,app,host,port):
         self.app = app
@@ -21,12 +20,13 @@ class HTTPServer(object):
                     request = Request(buff)
                     resp = self.app.lookup(request)
                     client_sock.sendall(resp)
-                else:
-                    client_sock.sendall(bytes(buff))
         except Exception as e:
+            # write log
+            print( "server error =>",e )
             return 
     def start(self):
         print( f"Server Listening on {self.host}:{self.port} ..." )
+        threading._start_new_thread(self.app.gc_session,())
         with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as sock:
             sock.setsockopt(socket.SOL_SOCKET,
                                  socket.SO_REUSEADDR,
@@ -43,8 +43,9 @@ class HTTPServer(object):
                     continue
                 except Exception as e:
                     # write log 
+                    print( "socket error =>",e )
                     continue
-    def have_changed(self):
+    def have_file_changed(self):
         FILES = {i.__file__:i for i in sys.modules.values() if getattr(i,"__file__",False)}
         FILE_MTIME_MODULES = {name:(os.path.getmtime(name),module) for name,module in FILES.items()}
         while 1:
@@ -60,7 +61,7 @@ class HTTPServer(object):
         try:
             if os.environ.get('reload') == 'true':
                 threading._start_new_thread(self.start,())
-                self.have_changed()
+                self.have_file_changed()
             else: # first step in there ... 
                 while 1:
                     os.environ['reload'] = 'true'
