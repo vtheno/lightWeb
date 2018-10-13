@@ -1,5 +1,4 @@
-﻿from Web.Check import AssertCheck
-from Web.httpStatus import HttpStatus
+﻿from Web.httpStatus import HttpStatus
 
 from urllib.parse import quote, unquote
 from html import escape
@@ -8,7 +7,6 @@ class Request(object):
 
     def __init__(self, ctx):
         #print( ctx )
-        AssertCheck(ctx, str)
         self.ctx = ctx # client_recv_buff
         self.always = []
         self.general = []
@@ -49,25 +47,18 @@ class Request(object):
         return method.upper()
 
     def add_always(self, always : str):
-        AssertCheck(always, str)
         self.always += [always + '\r\n']
 
     def add_general(self, general : str):
-        AssertCheck(general, str)
         self.general += [general + '\r\n']
 
     def add_header(self, header : str):
-        AssertCheck(header, str)
         self.header += [header + '\r\n']
 
     def add_resp(self, resp : str):
-        AssertCheck(resp, str)
         self.resp += [resp + '\r\n']
 
-    def make_response(self, status : HttpStatus, content : str):
-        AssertCheck(status, HttpStatus)
-        if isinstance(content, bytes) or isinstance(content, str):
-            AssertCheck(content, type(content))
+    def make_response(self, status : HttpStatus, content : [str,bytes]):
         self.add_always(f'''HTTP/1.1 {status!s}''')
         self.add_always("Server: ligthWeb")
         self.add_resp('')

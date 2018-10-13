@@ -1,6 +1,5 @@
 #coding=utf-8
 from Web.Route import *
-from Web.Check import AssertCheck
 from Web.Session import *
 from Web.Request import Request
 from Web.Header import Set_Cookie
@@ -72,7 +71,6 @@ class Application(object):
         return f"{self._route!r}"
 
     def route(self,pattern_str : str):
-        AssertCheck(pattern_str , str)
         #print( f"{self.__name__}: define route {pattern_str}" )
         pattern = Pattern(pattern_str)
         def wait(fn):

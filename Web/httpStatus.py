@@ -53,13 +53,3 @@ BadGateway  = HttpStatus(502,"Bad Gateway")
 Unavailable = HttpStatus(503,"Service Unavailable") # 服务器繁忙
 GatewayOut  = HttpStatus(504,"Gateway Timeout")
 NotSupport  = HttpStatus(505,"HTTP Version Not Supported")
-
-"""
-__all__ = ["HttpStatus",
-           "Continue","Switch",
-           "OK","Created","Accepted","NonAuth","NoContent","ResetContent","PartContent",
-           "MultChoices","MovePerm","Found","SeeOther","NotModified","UseProxy","TempRedire",
-           "BadRequest","UnAuth","Forbidden","NotFound","NotAllow","NotAccept","ProxyAuth","Timeout",
-           "Conflict","Gone","RequireLen","PreFailed","TooLarge","TooLong","UnSupport","ExceptFail",
-           "InternalSE","NoImplement","BadGateway","Unavailable","GatewayOut","NotSupport"]
-"""

@@ -134,7 +134,7 @@ def download_name(self, ctx : Request, name : str):
 @app.route("/{name}")
 def hello(self, ctx :Request, name : str):
     session = app.update_session(ctx)
-    return ctx.make_response(OK,f"{name}!")
+    return ctx.make_response(OK,f"<h1>{name}</h1>")
 
 def redire_to_index(self, ctx : Request):
     session = app.update_session(ctx)
