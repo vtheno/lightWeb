@@ -1,10 +1,24 @@
 #coding=utf-8
 from Web.Request import Request
 from Web.Log import *
+
 import socket
 from urllib.parse import quote,unquote
 import os,threading,time,subprocess,sys
 from pprint import pprint
+from traceback import TracebackException
+
+def error_trace(e):
+    # from traceback.print_exc
+    limit = None
+    chain = True
+    tb = e.__traceback__
+    value = e
+    etype = type(e)
+    out = [ ]
+    for line in TracebackException(type(value), value, tb, limit=limit).format(chain=chain):
+        out += [line.strip("\n")]
+    return '; '.join(out[-2:])
 
 class HTTPServer(object):
     def __init__(self,app,host:str,port:int):
@@ -24,7 +38,7 @@ class HTTPServer(object):
                     client_sock.sendall(resp)
         except Exception as e:
             # write log
-            Log.error(f"server error => {e}")
+            Log.error(f"server error => {error_trace(e)}")
             return 
     def start(self):
         print( f"Server Listening on {self.host}:{self.port} ..." )
@@ -45,7 +59,7 @@ class HTTPServer(object):
                     continue
                 except Exception as e:
                     # write log 
-                    Log.error( f"socket error => {e}" )
+                    Log.error(f"server error => {error_trace(e)}")
                     continue
     def have_file_changed(self):
         FILES = {i.__file__:i for i in sys.modules.values() if getattr(i,"__file__",False)}

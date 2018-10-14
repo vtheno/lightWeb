@@ -39,7 +39,7 @@ class Request(object):
         method, route, http_version = self._ctx_method_route_version.split()
         #route = escape(unquote(route, encoding='utf-8'), quote=1)
         route = unquote(route,encoding='utf-8')
-        print( f"route => {route}" )
+        # print( f"route => {route}" )
         return route
 
     def get_method(self):
