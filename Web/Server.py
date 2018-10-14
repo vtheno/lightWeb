@@ -1,12 +1,13 @@
 #coding=utf-8
 from Web.Request import Request
-
+from Web.Log import *
 import socket
 from urllib.parse import quote,unquote
 import os,threading,time,subprocess,sys
 from pprint import pprint
+
 class HTTPServer(object):
-    def __init__(self,app,host,port):
+    def __init__(self,app,host:str,port:int):
         self.app = app
         self.host = host
         self.port = port
@@ -18,11 +19,12 @@ class HTTPServer(object):
                 buff = str(client_sock.recv(16_384), 'iso-8859-1')
                 if buff:
                     request = Request(buff)
+                    Log.info(f"{client_addr} => {request}")
                     resp = self.app.lookup(request)
                     client_sock.sendall(resp)
         except Exception as e:
             # write log
-            print( "server error =>",e )
+            Log.error(f"server error => {e}")
             return 
     def start(self):
         print( f"Server Listening on {self.host}:{self.port} ..." )
@@ -43,7 +45,7 @@ class HTTPServer(object):
                     continue
                 except Exception as e:
                     # write log 
-                    print( "socket error =>",e )
+                    Log.error( f"socket error => {e}" )
                     continue
     def have_file_changed(self):
         FILES = {i.__file__:i for i in sys.modules.values() if getattr(i,"__file__",False)}

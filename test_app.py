@@ -5,6 +5,8 @@ from Web.httpStatus import *
 from Web.Header import *
 from Web.Method import *
 from Web.Tool import *
+from Web.View import *
+
 
 from json import dumps
 from mimetypes import guess_type
@@ -131,10 +133,10 @@ def download_name(self, ctx : Request, name : str):
         return ctx.make_response(OK,content)
     return self.general_route(ctx,name)
 
-@app.route("/{name}")
-def hello(self, ctx :Request, name : str):
-    session = app.update_session(ctx)
-    return ctx.make_response(OK,f"<h1>{name}</h1>")
+#@app.route("/{name}")
+#def hello(self, ctx :Request, name : str):
+#    session = app.update_session(ctx)
+#    return ctx.make_response(OK,f"<h1>{name}</h1>")
 
 def redire_to_index(self, ctx : Request):
     session = app.update_session(ctx)
@@ -143,3 +145,10 @@ def redire_to_index(self, ctx : Request):
 
 app.add_route("/download/",redire_to_index)
 app.add_route("/download",redire_to_index)
+
+class Hello(metaclass=View):
+    def GET(self,ctx:Request,name):
+        print( "HELLO GET =>",type(self))
+        return ctx.make_response(OK,f"<h2>{name}</h2>")
+
+app.add_route("/hello-{name}",Hello)
