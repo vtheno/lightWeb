@@ -30,7 +30,8 @@ class HTTPServer(object):
     def application(self,client_sock,client_addr):
         try:
             with client_sock:
-                buff = str(client_sock.recv(16_384), 'iso-8859-1')
+                #buff = str(client_sock.recv(16_384), 'iso-8859-1')
+                buff = client_sock.recv(16_384).decode('utf-8')
                 if buff:
                     request = Request(buff)
                     Log.info(f"{client_addr} => {request}")
