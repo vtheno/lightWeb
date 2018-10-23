@@ -28,23 +28,27 @@ class Application(object):
         return self.sessions[id]
 
     def get_session(self,key :str):
-        return self.sessions.get(key)
-
+        if key in self.sessions.keys():
+            return self.sessions[key]
+        return None
     def update_session(self,ctx:Request) -> Session:
         """
         if session not live then dorp it and create new session and update cookie
         else session is live then update recent_time
         """
         key = ctx.get_session_key()
+        print( f"1 => {ctx.get_url()}" )
+        print( f"2 => sessions {self.sessions}" )
         if key:
             session = self.get_session(key)
+            print( f"3 => session {session}")
             if session:
-                print( f"=> {session.id} not,update ; sessions =>",self.sessions )
+                print( f"4 => {session.id} not,update" )
                 session.set_time()
                 return session
         session = self.build_session()
         session["login"] = False
-        print( f"=> {session.id} update ; sessions =>",self.sessions )
+        print( f"4 => {session.id} update" )
         ctx.add_general(Set_Cookie(f"session={session.id}; httpOnly; path=/"))
         return session
 
