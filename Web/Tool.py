@@ -1,5 +1,5 @@
 from Web.Header import Location,Allow
-from Web.httpStatus import Found,NotAllow
+from Web.HTTPStatus import Found,NotAllow
 
 import os
 from os import fstat

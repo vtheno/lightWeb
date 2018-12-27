@@ -2,7 +2,7 @@
 from Web.Request import Request
 from Web.Method import Method,methods
 from Web.Header import Allow
-from Web.httpStatus import NotAllow
+from Web.HTTPStatus import NotAllow
 
 from types import FunctionType
 

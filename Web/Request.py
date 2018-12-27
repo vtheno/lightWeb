@@ -1,4 +1,4 @@
-﻿from Web.httpStatus import HttpStatus
+﻿from Web.HTTPStatus import HTTPStatus
 
 from urllib.parse import quote, unquote
 from html import escape
@@ -58,7 +58,7 @@ class Request(object):
     def add_resp(self, resp : str):
         self.resp += [resp + '\r\n']
 
-    def make_response(self, status : HttpStatus, content : [str,bytes]):
+    def make_response(self, status : HTTPStatus, content : [str,bytes]):
         self.add_always(f'''HTTP/1.1 {status!s}''')
         self.add_always("Server: ligthWeb")
         self.add_resp('')
