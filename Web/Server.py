@@ -2,17 +2,10 @@
 from Web.Request import Request
 from Web.Log import *
 from Web.Tool import adjoint
-from urllib.parse import quote,unquote
-from pprint import pprint
 from traceback import TracebackException
-from queue import Queue
-import os
-import time
-import subprocess
-import sys
-import threading
 import socket
-
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, Executor
+import threading
 def error_trace(e):
     # from traceback.print_exc
     limit = None
@@ -32,72 +25,44 @@ class HTTPServer(object):
         self.port = port
     def __repr__(self):
         return f"{self.host}:{self.port} => {self.app}"
-    @property
-    @adjoint
-    def application(self):
-        while 1:
-            client_sock,client_addr = yield
-            # print( client_addr, client_sock )
-            try:
-                with client_sock:
-                    #buff = str(client_sock.recv(16_384), 'iso-8859-1')
-                    buff = client_sock.recv(16_384).decode('utf-8')
-                    if buff:
-                        request = Request(buff)
-                        resp = self.app.lookup(request)
-                        client_sock.sendall(resp)
-                        Log.info(f"{client_addr} => {request}")
-                    else:
-                        client_sock.shutdown(socket.SHUT_WR)
-            except Exception as e:
-                # write log
-                Log.error(f"server error => {error_trace(e)}")
-            finally:
-                client_sock.close()
-    def start(self):
+    def application(self, obj):
+        client_sock,client_addr = obj
+        # print( client_addr, client_sock )
+        try:
+            with client_sock:
+                #buff = str(client_sock.recv(16_384), 'iso-8859-1')
+                buff = client_sock.recv(16_384).decode('utf-8')
+                if buff:
+                    request = Request(buff)
+                    resp = self.app.lookup(request)
+                    client_sock.sendall(resp)
+                    Log.info(f"{client_addr} => {request}")
+                else:
+                    client_sock.shutdown(socket.SHUT_WR)
+        except Exception as e:
+            # write log
+            Log.error(f"server error => {error_trace(e)}")
+        finally:
+            client_sock.close()
+    def start(self, worker=1024):
         print( f"Server Listening on {self.host}:{self.port} ..." )
         threading._start_new_thread(self.app.gc_session,())
         with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as sock:
             sock.setsockopt(socket.SOL_SOCKET,
-                                 socket.SO_REUSEADDR,
-                                 1)
+                            socket.SO_REUSEADDR,
+                            1)
             sock.bind((self.host, self.port))
             sock.setblocking( False )
-            sock.listen(10240)
+            sock.listen(worker)
             sock.settimeout(0.002)
-            while 1:
-                try:
-                    self.application.send( sock.accept() )
-                except socket.timeout:
-                    continue
-                except Exception as e:
-                    Log.error(f"server error => {error_trace(e)}")
-                    continue
-    def have_file_changed(self):
-        FILES = {i.__file__:i for i in sys.modules.values() if getattr(i,"__file__",False)}
-        FILE_MTIME_MODULES = {name:(os.path.getmtime(name),module) for name,module in FILES.items()}
-        while 1:
-            for filename,mtime_module in FILE_MTIME_MODULES.items():
-                mtime,module = mtime_module
-                cur_time = os.path.getmtime(filename)
-                if cur_time != mtime:
-                    print( "\033[2J\033m" ) # clear
-                    print( "reload file => ",filename,mtime,cur_time )
-                    sys.exit(233)
-            time.sleep(1)
-    def run_forever(self):
-        try:
-            if os.environ.get('reload') == 'true':
-                threading._start_new_thread(self.start,())
-                self.have_file_changed()
-            else: # first step in there ... 
+            with ThreadPoolExecutor(max_workers=worker) as pool:
                 while 1:
-                    os.environ['reload'] = 'true'
-                    args = [sys.executable]+sys.argv
-                    flag = subprocess.call(args,env=os.environ)
-                    print( f"flag: {flag}" )
-                    if flag != 233:
-                        sys.exit( flag )
-        except KeyboardInterrupt:
-            return 
+                    try:
+                        pool.submit(self.application, sock.accept())
+                    except socket.timeout:
+                        continue
+                    except Exception as e:
+                        Log.error(f"server error => {error_trace(e)}")
+                        continue
+
 __all__ = ["HTTPServer"]

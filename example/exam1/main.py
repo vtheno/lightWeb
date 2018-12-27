@@ -8,4 +8,4 @@ from static import app
 @call
 @call
 def _():
-    return HTTPServer(app,'localhost',80).run_forever
+    return HTTPServer(app,'localhost',80).start
