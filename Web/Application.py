@@ -28,16 +28,14 @@ class Application(object):
         return self.sessions[id]
 
     def get_session(self,key :str):
-        if key in self.sessions.keys():
-            return self.sessions[key]
-        return None
+        return self.sessions.get(key,None)
     def update_session(self,ctx:Request) -> Session:
         """
         if session not live then dorp it and create new session and update cookie
         else session is live then update recent_time
         """
-        key = ctx.get_session_key()
-        print( f"1 => {ctx.get_url()}" )
+        key = ctx.request.get_session_key()
+        print( f"1 => {ctx.request.url}" )
         print( f"2 => sessions {self.sessions}" )
         if key:
             session = self.get_session(key)
@@ -49,25 +47,19 @@ class Application(object):
         session = self.build_session()
         session["login"] = False
         print( f"4 => {session.id} update" )
-        ctx.add_general(Set_Cookie(f"session={session.id}; httpOnly; path=/"))
+        ctx.response.push( str(Set_Cookie(f"session={session.id}; httpOnly; path=/")) )
         return session
 
     def unset_session(self,key : str) -> None:
         if key in self.sessions.keys():
-            @self.sessions.pop
-            @call
-            def _():
-                return key
-
+            self.sessions.pop(key)
+                
     def gc_session(self):
         while 1:
             for k,v in self.sessions.items():
                 if v.can_gc():
                     print( f"gc => {v.id}" )
-                    @self.sessions.pop
-                    @call
-                    def _():
-                        return k
+                    self.sessions.pop( k )
                     break
             time.sleep(0.05)
 
@@ -78,19 +70,13 @@ class Application(object):
         #print( f"{self.__name__}: define route {pattern_str}" )
         pattern = Pattern(pattern_str)
         def wait(fn):
-            @self._route.route_table.update
-            @call
-            def _():
-                return {pattern:fn}
+            self._route.route_table.update( {pattern:fn} )
             return self._route.route
         return wait
 
     def add_route(self, pattern_str : str , fn ):
         pattern = Pattern(pattern_str)
-        @self._route.route_table.update
-        @call
-        def _():
-            return {pattern:fn}
+        self._route.route_table.update( {pattern:fn} )
         return None
 
 __all__ = ["Application"]

@@ -103,7 +103,7 @@ venv.bak/
 # mypy
 .mypy_cache/
 
-# emacs
+# emacs backup and my file
 *~
 static/
 www/
@@ -112,3 +112,4 @@ www/
 *.org
 *.cmd
 app/
+ext/*.c

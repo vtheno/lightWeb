@@ -13,9 +13,9 @@ class StaticFile(metaclass=View):
         value = read_file(path)
         if value:
             typ,content,length = value
-            ctx.add_header(Content_type(typ))
-            ctx.add_header(Content_length(length))
-            return ctx.make_response(OK,content)
+            ctx.response.push(str(Content_type(typ)))
+            ctx.response.push(str(Content_length(length)))
+            return ctx.response.build_with_string(OK,content)
         return self.general_route(ctx)
 
 from json import dumps
@@ -28,14 +28,17 @@ class Links(metaclass=View):
             "/urln":"valuen",
         }]
         content = str(dumps(data))
-        ctx.add_header( Content_type("application/json") )
-        ctx.add_header( Content_length(len(content)) )
-        return ctx.make_response(OK,content)
+        ctx.response.push( str(Content_type("application/json")) )
+        ctx.response.push( str(Content_length(len(content))) )
+        return ctx.response.build_with_string(OK,content)
 @app.route("/")
 class Index(metaclass=View):
     def get(self, ctx: Request):
         content = "Hello World!"
-        ctx.add_header( Content_type("text/html") )
-        ctx.add_header( Content_length(len(content)) )
-        return ctx.make_response(OK,content)
+        ctx.response.push( str(Content_type("text/html")) )
+        ctx.response.push( str(Content_length(len(content))) )
+        resp = ctx.response.build_with_string(OK,content)
+        # print( ctx.response.headers )
+        # print( resp )
+        return resp
 __all__ = ["app"]

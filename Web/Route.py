@@ -29,7 +29,7 @@ class Route(object):
         return repr(self.route_table)
     def route(self, ctx : Request, *args,**kws):
         # route : Request -> Response
-        url = ctx.get_url ()
+        url = ctx.request.url
         for pattern,func in self.route_table.items():
             out = pattern.match(url)
             # print( ">",pattern, out,args,kws )
@@ -39,5 +39,5 @@ class Route(object):
                 return func(self, ctx, *(out + list(args)), **kws)
         return self.general_route(ctx, *args, **kws)
     def general_route(self, ctx : Request, *args, **kws):
-        return ctx.make_response(NotFound,"<html><body><h3>404 Page NotFound</h3></body></html>")
+        return ctx.response.build_with_string(NotFound,"<html><body><h3>404 Page NotFound</h3></body></html>")
 __all__ = ["Route","Pattern"]

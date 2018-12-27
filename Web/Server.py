@@ -1,12 +1,17 @@
 #coding=utf-8
 from Web.Request import Request
 from Web.Log import *
-
-import socket
+from Web.Tool import adjoint
 from urllib.parse import quote,unquote
-import os,threading,time,subprocess,sys
 from pprint import pprint
 from traceback import TracebackException
+from queue import Queue
+import os
+import time
+import subprocess
+import sys
+import threading
+import socket
 
 def error_trace(e):
     # from traceback.print_exc
@@ -27,20 +32,28 @@ class HTTPServer(object):
         self.port = port
     def __repr__(self):
         return f"{self.host}:{self.port} => {self.app}"
-    def application(self,client_sock,client_addr):
-        try:
-            with client_sock:
-                #buff = str(client_sock.recv(16_384), 'iso-8859-1')
-                buff = client_sock.recv(16_384).decode('utf-8')
-                if buff:
-                    request = Request(buff)
-                    Log.info(f"{client_addr} => {request}")
-                    resp = self.app.lookup(request)
-                    client_sock.sendall(resp)
-        except Exception as e:
-            # write log
-            Log.error(f"server error => {error_trace(e)}")
-            return 
+    @property
+    @adjoint
+    def application(self):
+        while 1:
+            client_sock,client_addr = yield
+            # print( client_addr, client_sock )
+            try:
+                with client_sock:
+                    #buff = str(client_sock.recv(16_384), 'iso-8859-1')
+                    buff = client_sock.recv(16_384).decode('utf-8')
+                    if buff:
+                        request = Request(buff)
+                        resp = self.app.lookup(request)
+                        client_sock.sendall(resp)
+                        Log.info(f"{client_addr} => {request}")
+                    else:
+                        client_sock.shutdown(socket.SHUT_WR)
+            except Exception as e:
+                # write log
+                Log.error(f"server error => {error_trace(e)}")
+            finally:
+                client_sock.close()
     def start(self):
         print( f"Server Listening on {self.host}:{self.port} ..." )
         threading._start_new_thread(self.app.gc_session,())
@@ -50,16 +63,14 @@ class HTTPServer(object):
                                  1)
             sock.bind((self.host, self.port))
             sock.setblocking( False )
-            sock.listen(1024)
+            sock.listen(10240)
             sock.settimeout(0.002)
             while 1:
                 try:
-                    client_sock,client_addr = sock.accept()
-                    threading._start_new_thread(self.application,(client_sock,client_addr))
+                    self.application.send( sock.accept() )
                 except socket.timeout:
                     continue
                 except Exception as e:
-                    # write log 
                     Log.error(f"server error => {error_trace(e)}")
                     continue
     def have_file_changed(self):

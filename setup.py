@@ -1,5 +1,5 @@
 #coding=utf-8
-from setuptools import setup, find_packages
+from setuptools import setup, find_packages, Extension
 
 setup(  
     name = "Web", 
@@ -16,8 +16,11 @@ setup(
     packages = find_packages(), 
     include_package_data = True, 
     platforms = "any", 
+    setup_requires = ['setuptools','cython'],
     install_requires = [], 
-    
     scripts = [], 
-    entry_points = { } 
+    entry_points = { } ,
+    ext_modules = [
+        Extension('Web.parse',sources=["ext/parse.pyx"]),
+    ],
 ) 

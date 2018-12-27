@@ -11,19 +11,19 @@ def require_login(app : "Application"):
             session = app.update_session(ctx)
             if session and session["login"]:
                 return func(self, ctx, *args,**kws)
-            ctx.add_header( Location("/login") )
-            return ctx.make_response(Found,'')
+            ctx.response.push( str(Location("/login")) )
+            return ctx.response.build_with_string(str(Found),'')
         return warp_login
     return _warp_login
 
 def allow_method(methods:[str]):
     def _warp_allow(func):
         def warp_allow(self, ctx : "Request", *args,**kws):
-            if ctx.get_method() in methods:
+            if ctx.request.method in methods:
                 return func(self, ctx, *args, **kws)
             else:
-                ctx.add_header( Allow(','.join(methods)) )
-                return ctx.make_response(NotAllow,'')
+                ctx.response.push( str(Allow(','.join(methods))) )
+                return ctx.response.build_with_string(str(NotAllow),'')
         return warp_allow
     return _warp_allow
 
@@ -43,5 +43,24 @@ def read_file(filename,access_binary=False) -> [None,(str,[bytes,str],int)]:
         return (content_type,content,size)
     return None
 
-
-__all__ = ["require_login","read_file","allow_method","call"]
+def adjoint(func):
+    def warp(*args,**kws):
+        ret = func(*args,**kws)
+        next(ret)
+        return ret
+    return warp
+def Split(inp: str,target=' '):
+    temp = ''
+    i = 0
+    length = len(inp)
+    while i < length:
+        if inp[i] == target:
+            if temp:
+                yield temp
+                temp = ''
+        else:
+            temp += inp[i]
+        i += 1
+    if temp:
+        yield temp
+__all__ = ["require_login","read_file","allow_method","call","adjoint","Split"]

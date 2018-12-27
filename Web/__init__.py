@@ -8,6 +8,6 @@ import Web.Header as Header
 import Web.Method as Method
 import Web.Session as Session
 import Web.Tool as Tool
-
-__all__ = ["HTTPStatus","Header","Method","Tool",
+import Web.parse as parse
+__all__ = ["HTTPStatus","Header","Method","Tool","parse"
            "Request","Route","Application","Server","Session"]
