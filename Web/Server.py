@@ -3,9 +3,10 @@ from Web.Request import Request
 from Web.Log import *
 from Web.Tool import adjoint
 from traceback import TracebackException
-import socket
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, Executor
 import threading
+import socket
+
 def error_trace(e):
     # from traceback.print_exc
     limit = None
@@ -19,13 +20,14 @@ def error_trace(e):
     return '; '.join(out[-2:])
 
 class HTTPServer(object):
-    def __init__(self,app,host:str,port:int):
+    def __init__(self,app,host:str,port:int,logname='lightWeb.log'):
         self.app = app
         self.host = host
         self.port = port
+        self.log = Log(logname)
     def __repr__(self):
         return f"{self.host}:{self.port} => {self.app}"
-    def application(self, obj):
+    def handler(self, obj):
         client_sock,client_addr = obj
         # print( client_addr, client_sock )
         try:
@@ -36,17 +38,16 @@ class HTTPServer(object):
                     request = Request(buff)
                     resp = self.app.lookup(request)
                     client_sock.sendall(resp)
-                    Log.info(f"{client_addr} => {request}")
+                    self.log.info(f"{client_addr} => {request}")
                 else:
                     client_sock.shutdown(socket.SHUT_WR)
         except Exception as e:
             # write log
-            Log.error(f"server error => {error_trace(e)}")
+            self.log.error(f"Handler Error => {error_trace(e)}")
         finally:
             client_sock.close()
     def start(self, worker=1024):
         print( f"Server Listening on {self.host}:{self.port} ..." )
-        threading._start_new_thread(self.app.gc_session,())
         with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as sock:
             sock.setsockopt(socket.SOL_SOCKET,
                             socket.SO_REUSEADDR,
@@ -58,11 +59,10 @@ class HTTPServer(object):
             with ThreadPoolExecutor(max_workers=worker) as pool:
                 while 1:
                     try:
-                        pool.submit(self.application, sock.accept())
+                        pool.submit(self.handler, sock.accept())
                     except socket.timeout:
                         continue
                     except Exception as e:
-                        Log.error(f"server error => {error_trace(e)}")
+                        self.log.error(f"Server Error => {error_trace(e)}")
                         continue
-
 __all__ = ["HTTPServer"]

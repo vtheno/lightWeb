@@ -3,7 +3,7 @@ import logging
 #logging.basicConfig(level=logging.DEBUG,
 #                    format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
 class Log(object):
-    def __init__(self,filename="Server.log"):
+    def __init__(self,filename):
         self.log = logging.getLogger()
         self.log.setLevel(logging.INFO)
         self.logfile = logging.FileHandler(filename,mode="w")
@@ -18,5 +18,4 @@ class Log(object):
         self.error   = self.log.error
         self.critical = self.log.critical
 
-Log = Log()
 __all__ = ["Log"]

@@ -4,7 +4,7 @@ from Web.HTTPStatus import Found,NotAllow
 import os
 from os import fstat
 from mimetypes import guess_type
-
+"""
 def require_login(app : "Application"):
     def _warp_login(func):
         def warp_login(self, ctx :"Request", *args,**kws):
@@ -15,6 +15,15 @@ def require_login(app : "Application"):
             return ctx.response.build_with_string(str(Found),'')
         return warp_login
     return _warp_login
+def add_require_login(url):
+    pass
+def make_require_login(app, handler):
+    def require_login(func):
+        def _require_login(self, ctx, *args, **kws):
+            session = app.update_session(ctx)
+            return handler(self, ctx, *args, **kws)
+        return _require_login
+    return require_login
 
 def allow_method(methods:[str]):
     def _warp_allow(func):
@@ -29,7 +38,7 @@ def allow_method(methods:[str]):
 
 def call(func):
     return func()
-
+"""
 def read_file(filename,access_binary=False) -> [None,(str,[bytes,str],int)]:
     if os.path.isfile(filename):
         with open(filename,'rb') if access_binary else open(filename,'r',encoding='utf-8') as page:
@@ -49,18 +58,5 @@ def adjoint(func):
         next(ret)
         return ret
     return warp
-def Split(inp: str,target=' '):
-    temp = ''
-    i = 0
-    length = len(inp)
-    while i < length:
-        if inp[i] == target:
-            if temp:
-                yield temp
-                temp = ''
-        else:
-            temp += inp[i]
-        i += 1
-    if temp:
-        yield temp
-__all__ = ["require_login","read_file","allow_method","call","adjoint","Split"]
+
+__all__ = ["read_file","adjoint"]

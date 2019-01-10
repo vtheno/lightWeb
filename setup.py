@@ -3,7 +3,7 @@ from setuptools import setup, find_packages, Extension
 
 setup(  
     name = "Web", 
-    version = "1.0", 
+    version = "1.1", 
     keywords = ("Web",), 
     description = "light Web framework", 
     long_description = "light Web framework",
