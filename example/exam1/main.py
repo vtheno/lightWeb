@@ -5,4 +5,4 @@ from app import app
 from static import app
 
 if __name__ == '__main__':
-    HTTPServer(app,'localhost', 80).start()
+    HTTPServer(app,'0.0.0.0', 80).start()

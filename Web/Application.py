@@ -7,7 +7,8 @@ import re
 
 def build_route_regexp(string):
     def named_groups(obj):
-        return '(?P<{obj}>[a-zA-Z0-9_]+)'.format(obj=obj.group(1))
+        # old '(?P<{obj}>[a-zA-Z0-9_]+)'
+        return '(?P<{obj}>(.+))'.format(obj=obj.group(1))
     re_string = re.sub(
         r'{([a-zA-Z0-9_]+)}', 
         named_groups,

@@ -38,7 +38,7 @@ class HTTPServer(object):
                     request = Request(buff)
                     resp = self.app.lookup(request)
                     client_sock.sendall(resp)
-                    self.log.info(f"{client_addr} => {request}")
+                    self.log.info(f"{client_addr} => " + buff.split('\r\n\r\n')[0].split('\r\n')[0])
                 else:
                     client_sock.shutdown(socket.SHUT_WR)
         except Exception as e:

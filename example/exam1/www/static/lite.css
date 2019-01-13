@@ -1,0 +1,175 @@
+/* display: inline-flex, flex */
+/* 
+ flex-direction
+ => row | row-reverse | column | column-reverse;
+ ;; row is left to right , row space
+ ;; row-reverse is right to left
+ ;; column is top down  , column space
+ ;; column-reverse is bottom up
+ ;; 布局方向为 column 则是 空间角度的列方向 主轴方向
+ ;; 布局方向为 row    则是 空间角度的行方向 主轴方向
+ flex-wrap 
+ => nowrap | wrap | wrap-reverse;
+ ;; nowrap not newline
+ ;; wrap firstline on top
+ ;; wrap-reverse firstline on bottom
+ flex-flow
+ => <flex-direction> || <flex-wrap>;
+ justify-content ;; 主轴 上的对齐方式
+ => flex-start | flex-end | center | space-between | space-around;
+ align-items  ;; 非主轴上的对齐方式
+ => flex-start | flex-end | center | baseline | stretch;
+ align-content 
+ => flex-start | flex-end | center | space-between | space-around | stretch;
+ align-self
+ order 控制 item 顺序
+*/
+/* 
+ ;; order about sequence order
+ flex-grow ;; 拉伸
+ ;; 从 剩余空间分配来的 大小占比例
+ ;; 总比例为 当前 flex 布局下所有 item 中 flex-grow 的和
+ ;; scale size
+ flex-shrink ;; 缩放
+ ;; scale size
+ flex-basis ;; 根据 flex-direction 确定 height 或者 width
+ ;; 指定了 flex 元素 item 在 主轴 方向上的初始大小 
+ ;; 如果 不使用 box-sizing 来改变盒子模型 的大小
+ ;; 这个属性就决定了 flex 元素的内容盒子的 宽高[取决于主轴方向] 的大小
+ ;; length or auto , main size
+ flex
+ ;; none | [ flex-grow flex-shrink flex-basis ]
+ align-self
+ ;; auto | flex-start | flex-end | center | baseline | stretch;
+*/
+* {
+    padding: 0 ;
+    margin: 0 ;
+}
+html,body {
+    width: 100% ;
+    height: 100% ;
+    display: flex ;
+    flex-direction: column;
+}
+/* body default layout is column */
+/*
+body {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}*/
+/*
+  flex-shrink 缩放大小, flex-grow 放大比例
+  flex-basis 主轴的大小 axis-main (主轴)
+ */
+.flex-scale-1 { flex-grow: 1 ; flex-basis: 0px ; }
+.flex-scale-2 { flex-grow: 2 ; flex-basis: 0px ; }
+.flex-scale-3 { flex-grow: 3 ; flex-basis: 0px ; }
+.flex-scale-4 { flex-grow: 4 ; flex-basis: 0px ; }
+.flex-scale-5 { flex-grow: 5 ; flex-basis: 0px ; }
+.flex-scale-6 { flex-grow: 6 ; flex-basis: 0px ; }
+.flex-scale-7 { flex-grow: 7 ; flex-basis: 0px ; }
+.flex-scale-8 { flex-grow: 8 ; flex-basis: 0px ; }
+.flex-scale-9 { flex-grow: 9 ; flex-basis: 0px ; }
+.flex-scale-10 { flex-grow: 10 ; flex-basis: 0px ; }
+.flex-scale-11 { flex-grow: 11 ; flex-basis: 0px ; }
+.flex-scale-12 { flex-grow: 12 ; flex-basis: 0px ; }
+.flex-scale-13 { flex-grow: 13 ; flex-basis: 0px ; }
+.flex-scale-14 { flex-grow: 14 ; flex-basis: 0px ; }
+.flex-scale-15 { flex-grow: 15 ; flex-basis: 0px ; }
+.flex-scale-16 { flex-grow: 16 ; flex-basis: 0px ; }
+.flex-scale-17 { flex-grow: 17 ; flex-basis: 0px ; }
+.flex-scale-18 { flex-grow: 18 ; flex-basis: 0px ; }
+.flex-scale-19 { flex-grow: 19 ; flex-basis: 0px ; }
+.flex-scale-20 { flex-grow: 20 ; flex-basis: 0px ; }
+.flex-scale-21 { flex-grow: 21 ; flex-basis: 0px ; }
+.flex-scale-22 { flex-grow: 22 ; flex-basis: 0px ; }
+.flex-scale-23 { flex-grow: 23 ; flex-basis: 0px ; }
+.flex-scale-24 { flex-grow: 24 ; flex-basis: 0px ; }
+.flex-scale-25 { flex-grow: 25 ; flex-basis: 0px ; }
+.flex-scale-26 { flex-grow: 26 ; flex-basis: 0px ; }
+.flex-scale-27 { flex-grow: 27 ; flex-basis: 0px ; }
+.flex-scale-28 { flex-grow: 28 ; flex-basis: 0px ; }
+.flex-scale-29 { flex-grow: 29 ; flex-basis: 0px ; }
+.flex-scale-30 { flex-grow: 30 ; flex-basis: 0px ; }
+.flex-scale-31 { flex-grow: 31 ; flex-basis: 0px ; }
+.flex-scale-32 { flex-grow: 32 ; flex-basis: 0px ; }
+.flex-scale-33 { flex-grow: 33 ; flex-basis: 0px ; }
+.flex-scale-34 { flex-grow: 34 ; flex-basis: 0px ; }
+.flex-scale-35 { flex-grow: 35 ; flex-basis: 0px ; }
+.flex-scale-36 { flex-grow: 36 ; flex-basis: 0px ; }
+.flex-scale-37 { flex-grow: 37 ; flex-basis: 0px ; }
+.flex-scale-38 { flex-grow: 38 ; flex-basis: 0px ; }
+.flex-scale-39 { flex-grow: 39 ; flex-basis: 0px ; }
+.flex-scale-40 { flex-grow: 40 ; flex-basis: 0px ; }
+/* flex:scale 1 <= scale <= 40 */
+.flex {
+    width: 100% ;
+    height: 100% ;
+    /* content , default direction is column*/
+    display: flex ;
+}
+/* container [ flex ] */
+.flex-axis-row {
+    flex-direction: row ;
+}
+.flex-axis-col {
+    flex-direction: column ;
+}
+.flex-axis-row-rev {
+    flex-direction: row-reverse ;
+}
+.flex-axis-col-rev {
+    flex-direction: column-reverse ;
+}
+/* flex:axis [ row | col | row-rev | col-rev ] */
+.flex-item-wrap {
+    flex-wrap: wrap ;
+}
+.flex-item-nowrap {
+    flex-wrap: nowrap ;
+}
+.flex-item-wrap-rev {
+    flex-wrap: wrap ;
+}
+/* flex:item [ nowrap | wrap | wrap-rev ] */
+.flex-axis-main-start {
+    justify-content: flex-start ;
+}
+.flex-axis-main-center {
+    justify-content: center ;
+}
+.flex-axis-main-end {
+    justify-content: flex-end ;
+}
+.flex-axis-main-between {
+    justify-content: space-between ;
+}
+.flex-axis-main-around {
+    justify-content: space-around ;
+}
+.flex-axis-cross-start {
+    align-items: flex-start ;
+}
+.flex-axis-cross-center {
+    align-items: center ;
+}
+.flex-axis-cross-end {
+    align-items: flex-end ;
+}
+.flex-axis-cross-baseline {
+    align-items: baseline ;
+}
+.flex-axis-cross-stretch {
+    align-items: stretch ;
+}
+/* flex:main  [ start | center | end | between | around ]
+   flex:cross [ start | center | end | baseline | stretch ]
+ */
+.hidden {
+    display: none;
+}

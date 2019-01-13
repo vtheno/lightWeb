@@ -1,0 +1,48 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link href="./static/lite.css" rel="stylesheet">
+    <script type="text/javascript" src="./static/lite.js"></script>
+    <script type="text/javascript" src="./static/index.js"></script>
+    <style>
+      .btn,btn:visited {
+          text-decoration: none;
+          color: #000000;
+          background: #FFFFFF;
+      }
+      .btn:hover {
+          background: #1abc9c;
+          color: #ffffff;
+      }
+      .shadow {
+          box-shadow: 0px 0px 3px;
+      }
+    </style>
+  </head>
+  <body container="flex" flex:axis="col">
+    <header id="desktop" class="shadow" container="flex" flex:scale="1">
+      <div container="flex" flex:scale="1"></div>
+      <div container="flex" flex:scale="3" flex:axis="row">
+	<a class="btn" container="flex" flex:scale="1" flex:main="center" flex:cross="center">Home</a>
+	<a class="btn" container="flex" flex:scale="1" flex:main="center" flex:cross="center">Discovery</a>
+	<a class="btn" container="flex" flex:scale="1" flex:main="center" flex:cross="center">About</a>
+	<div container="flex" flex:scale="3"></div>
+      </div>
+      <div container="flex" flex:scale="2"></div>
+    </header>
+    <header id="mobile" class="shadow hidden" container="flex" flex:scale="1">
+      <div container="flex" flex:scale="3" flex:axis="row">
+	<a class="btn" container="flex" flex:scale="1" flex:main="center" flex:cross="center">Home</a>
+	<a class="btn" container="flex" flex:scale="1" flex:main="center" flex:cross="center">Discovery</a>
+	<a class="btn" container="flex" flex:scale="1" flex:main="center" flex:cross="center">About</a>
+      </div>
+    </header>
+    <div container="flex" flex:scale="19" flex:axis="row">
+      <div container="flex" flex:scale="1" flex:axis="col">
+	<div container="flex" flex:scale="1" flex:axis="col" id="show">
+	</div>
+	<textarea container="flex" flex:scale="1" flex:axis="col" id="input"></textarea>
+      </div>
+    </div>
+  </body>
+</html>

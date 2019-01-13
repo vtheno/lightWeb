@@ -3,14 +3,8 @@ from Web.Request import Request
 from Web.Header import Content_type, Content_length 
 from Web.HTTPStatus import Found
 from Web.View import View
+from Web.Tool import read_file, make_require_login
 from app import app
-
-def make_require_login(handler):
-    def require_login(view):
-        def _require_login(self, ctx, *args, **kws):
-            return handler(view)(self, ctx, *args, **kws)
-        return _require_login
-    return require_login
 
 def handler(view):
     def _(self, ctx, *args, **kws):
@@ -25,15 +19,30 @@ def handler(view):
     return _
 
 require_login = make_require_login(handler)
-#@require_login
-@app.route("/")
+#
+@app.route("/{pix}")
 class Index(metaclass=View):
-    def get(self, ctx: Request):
-        ctx.response.content = "index!"
-        ctx.response.push( str(Content_type("text/html")) )
-        ctx.response.push( str(Content_length(len(ctx.response.content))) )
-        resp = ctx.response.build_with_string()
-        return resp
+    def get(self, ctx: Request, pix):
+        value = read_file(app.config['www'] + pix + '.png', True)
+        if value:
+            typ, ctx.response.b_content, size = value
+            ctx.response.push( typ )
+            ctx.response.push( size )
+            return ctx.response.build_with_bytes()
+        return self.abort(ctx)
+
+@app.route('/static/{filename}')
+class Static(metaclass=View):
+    def get(self, ctx: Request, filename):
+        value = read_file(app.config['static'] + filename)
+        if value:
+            typ, ctx.response.content, size = value
+            ctx.response.push( typ )
+            ctx.response.push( size )
+            # ctx.response.push( "Accept-Ranges: bytes" )
+            return ctx.response.build_with_string()
+        return self.abort(ctx)
+
 @app.route("/login")
 def hi(self, ctx):
     ctx.response.content = "hello~"
@@ -42,6 +51,7 @@ def hi(self, ctx):
     return ctx.response.build_with_string()
 
 @app.route("/reg-{id}")
+@require_login
 class Register(metaclass=View):
     def get(self, ctx: Request, id):
         print( id )
@@ -56,4 +66,5 @@ class Register(metaclass=View):
         ctx.response.push( str(Content_type("text/plain")) )
         ctx.response.push( str(Content_length(len(ctx.response.content))) )
         return ctx.response.build_with_string()
+
 __all__ = ["app"]
