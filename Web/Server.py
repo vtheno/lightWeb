@@ -2,6 +2,7 @@
 from Web.Request import Request
 from Web.Log import *
 from Web.Tool import adjoint
+from Web.HTTPStatus import Status
 from traceback import TracebackException
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, Executor
 import threading
@@ -32,13 +33,14 @@ class HTTPServer(object):
         # print( client_addr, client_sock )
         try:
             with client_sock:
-                #buff = str(client_sock.recv(16_384), 'iso-8859-1')
+                # buff = str(client_sock.recv(16_384), 'iso-8859-1')
                 buff = client_sock.recv(16_384).decode('utf-8')
+                # print( buff )
                 if buff:
                     request = Request(buff)
                     resp = self.app.lookup(request)
                     client_sock.sendall(resp)
-                    self.log.info(f"{client_addr} => " + buff.split('\r\n\r\n')[0].split('\r\n')[0])
+                    self.log.info(f"{client_addr} => {request.request.method} {request.request.url}")
                 else:
                     client_sock.shutdown(socket.SHUT_WR)
         except Exception as e:

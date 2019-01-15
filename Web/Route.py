@@ -1,6 +1,6 @@
 #coding=utf-8
 from Web.Request import Request
-from Web.HTTPStatus import NotFound
+from Web.HTTPStatus import Status
 from Web.Session import Sessions
 from types import FunctionType
 
@@ -14,10 +14,11 @@ class Route(object):
         for k,v in self.route_table.items():
             value = k.match(ctx.request.url)
             if value:
+                print( f'{ctx.request.method} {ctx.request.url}' )
                 return v(self, ctx, **value.groupdict())
         return self.abort(ctx)
     def abort(self, ctx : Request): 
-        ctx.response.status = str(NotFound)
+        ctx.response.status = Status[404]
         ctx.response.content = "<html><body><h3>404 Page NotFound</h3></body></html>"
         return ctx.response.build_with_string()
 

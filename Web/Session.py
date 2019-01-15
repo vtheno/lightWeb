@@ -35,8 +35,6 @@ class Sessions(object):
         if session not live then dorp it and create new session and update cookie
         else session is live then update recent_time
         """
-        if not ctx.request.info:
-            ctx.request.parseInfo()
         key = ctx.request.get_session()
         print( f"1 => {ctx.request.url}" )
         print( f"2 => sessions {self.sessions}" )
